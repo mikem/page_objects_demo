@@ -7,8 +7,10 @@ class BlogIndex < Page
   end
 
   def comment_count_for post_title
-    # TODO: find the count and return as integer
-    4
+    post_containers = all('.post')
+    post_container = post_containers.detect { |c| c.find('h3').text == post_title }
+    post_stats = post_container.find('.post-stats').text
+    post_stats.gsub('comments', '').to_i
   end
 
   def read title
