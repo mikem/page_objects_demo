@@ -7,10 +7,9 @@ class BlogIndex < Page
   end
 
   def comment_count_for post_title
-    post_containers = all('.post')
-    post_container = post_containers.detect { |c| c.find('h3').text == post_title }
-    post_stats = post_container.find('.post-stats').text
-    post_stats.gsub('comments', '').to_i
+    post_containers = all('.post').map { |p| BlogPostAndStats.new p }
+    post_container = post_containers.detect { |c| c.post_title == post_title }
+    post_container.comment_count
   end
 
   def read title

@@ -27,7 +27,8 @@ feature "User can comment", js: true do
   scenario "logged out user can sign in when they submit a new comment" do
     blog_post_page = BlogIndex.visit.read 'Yakety Yak'
     blog_post_page.create_comment "Don't talk back"
-    SignInDialog.new.sign_in_as 'hammerhead', 'deploytheyak'
+    sign_in_dialog = SignInDialog.new find('#sign-in-dialog')
+    sign_in_dialog.sign_in_as 'hammerhead', 'deploytheyak'
     expect(page).to have_content "Don't talk back"
 
     blog_post_page.refresh

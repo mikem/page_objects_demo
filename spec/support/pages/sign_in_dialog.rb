@@ -1,9 +1,9 @@
-require_relative 'page'
+require_relative 'page_fragment'
 
-class SignInDialog < Page
+class SignInDialog < PageFragment
   def sign_in_as username, password
-    fill_in 'Login', with: 'hammerhead'
-    fill_in 'Password', with: 'deploytheyak'
-    click_on 'Sign in'
+    @element.fill_in 'Login', with: 'hammerhead'
+    @element.fill_in 'Password', with: 'deploytheyak'
+    @element.click_on 'Sign in'
   end
 end
