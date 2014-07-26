@@ -8,42 +8,29 @@ feature "User can comment", js: true do
 
   scenario "leaving a comment persists the comment and increases the comment count" do
     visit '/sign_in' # we're faking user authentication, signs us in as first user
-    visit '/posts'
-    old_comment_count = comment_count_for 'Yakety Yak'
 
-    click_on 'Yakety Yak'
-    fill_in 'new-comment', with: "Don't talk back"
-    click_on 'Submit comment'
-    expect(page).to have_content "Don't talk back"
+    blog_index_page = BlogIndex.visit
+    old_comment_count = blog_index_page.comment_count_for 'Yakety Yak'
 
-    click_on 'Back to all posts'
-    comment_count = comment_count_for 'Yakety Yak'
+    blog_post_page = blog_index_page.read 'Yakety Yak'
+    blog_post_page.create_comment "Don't talk back"
+    expect(blog_post_page).to have_content "Don't talk back"
+
+    blog_index_page = blog_post_page.navigate_to_blog_index
+    comment_count = blog_index_page.comment_count_for 'Yakety Yak'
     expect(comment_count).to eq old_comment_count + 1
 
-    click_on 'Yakety Yak'
-    expect(page).to have_content "Don't talk back"
+    blog_post_page = blog_index_page.read 'Yakety Yak'
+    expect(blog_post_page).to have_content "Don't talk back"
   end
 
   scenario "logged out user can sign in when they submit a new comment" do
-    visit '/posts'
-    click_on 'Yakety Yak'
-    fill_in 'new-comment', with: "Don't talk back"
-    click_on 'Submit comment'
-
-    within '#sign-in-dialog' do
-      fill_in 'Login', with: 'hammerhead'
-      fill_in 'Password', with: 'deploytheyak'
-      click_on 'Sign in'
-    end
-
+    blog_post_page = BlogIndex.visit.read 'Yakety Yak'
+    blog_post_page.create_comment "Don't talk back"
+    SignInDialog.new.sign_in_as 'hammerhead', 'deploytheyak'
     expect(page).to have_content "Don't talk back"
 
-    visit page.current_path
+    blog_post_page.refresh
     expect(page).to have_content "Don't talk back"
-  end
-
-  def comment_count_for post_title
-    # TODO: find the count and return as integer
-    4
   end
 end
